@@ -8,6 +8,22 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 
+
+def bestaat_tabel(engine, naam):
+    #nogmaals verbinden met een raw connection om te kijken of het overzetten gelukt is
+    raw_connection = engine.raw_connection()
+    cursor = raw_connection.cursor()
+
+    #select statement om te kijken of de database bestaat_tabel, bij een error bestaat_tabel hij niet en returned False.
+    try:
+        cursor.execute('SELECT 1 FROM ' + naam + ' LIMIT 1;')
+        result = cursor.fetchone()
+        if result[0] == 1:
+            return True
+    except mysql.connector.errors.ProgrammingError as e:
+        return False
+
+
 # Functie voor het overzetten van een dataframe in een mysql database
 def csv_naar_sql(df, naam, gebruiker, wachtwoord, database, host):
     # creeren naam uit path location
@@ -22,18 +38,9 @@ def csv_naar_sql(df, naam, gebruiker, wachtwoord, database, host):
     con = engine.connect()
     df.to_sql(con=con, name=naam)
 
-    #nogmaals verbinden met een raw connection om te kijken of het overzetten gelukt is
-    connection = engine.raw_connection()
-    cursor = connection.cursor()
-
-    #select statement om te kijken of de database bestaat, bij een error bestaat hij niet en returned False.
-    try:
-        cursor.execute('SELECT 1 FROM ' + naam + ' LIMIT 1;')
-        result = cursor.fetchone()
-        if result[0] == 1:
-            return True
-    except mysql.connector.errors.ProgrammingError as e:
-        return False
+    #kijken of de tabel nu bestaat_tabel
+    klopt = bestaat_tabel(engine, naam)
+    return klopt
 
 
 def tkinter():
@@ -42,7 +49,7 @@ def tkinter():
         # gebruiker laten kiezen welke file hij/zij wilt overzetten en dit vervolgens als een pandas dataframe openen
         root.filename = filedialog.askopenfilename(initialdir='/', title='Kies een csv bestand',
                                                    filetypes=(('csv files', '*.csv'), ('alle files', '*.*')))
-        df = pd.read_csv(str(root.filename))
+        df = pd.read_csv(str(root.filename), sep=';')
 
         #Opslaan input van de gebruiker
         gebruiker = str(entrygebruiker.get())
@@ -54,7 +61,7 @@ def tkinter():
         # anders niet gelukt. Dit wordt ook weergeven in een messagebox
         gelukt = csv_naar_sql(df, root.filename, gebruiker, wachtwoord, database, host)
         if gelukt == True:
-            tk.messagebox.showinfo('Succes', 'De data is met succes overgezt in de database')
+            tk.messagebox.showinfo('Succes', 'De data is met succes overgezet in de database')
         elif gelukt == False:
             tk.messagebox.showinfo('Niet gelukt', 'De data is niet succesvol overgezet in de database')
 
