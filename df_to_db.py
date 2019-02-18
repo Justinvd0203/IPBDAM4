@@ -36,7 +36,7 @@ def csv_naar_sql(df, naam, gebruiker, wachtwoord, database, host):
     connector = 'mysql+mysqlconnector://' + gebruiker + ':' + wachtwoord + '@' + host + '/' + database
     engine = create_engine(str(connector))
     con = engine.connect()
-    df.to_sql(con=con, name=naam)
+    df.to_sql(con=con, name=naam, if_exists='replace')
 
     #kijken of de tabel nu bestaat_tabel
     klopt = bestaat_tabel(engine, naam)
