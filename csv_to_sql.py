@@ -14,7 +14,7 @@ def csv_naar_sql(gebruiker, wachtwoord, host, database):
     root.withdraw()
     naam = filedialog.askopenfilename(initialdir='/', title='Kies een csv bestand',
                                       filetypes=(('csv files', '*.csv'), ('alle files', '*.*')))
-    df = pd.read_csv(str(naam), sep=',')
+    df = pd.read_csv(str(naam), sep=';')
 
     # creeren naam uit path location
     naam = naam.split('.')
@@ -26,9 +26,7 @@ def csv_naar_sql(gebruiker, wachtwoord, host, database):
     connector = 'mysql+mysqlconnector://' + gebruiker + ':' + wachtwoord + '@' + host + '/' + database
     engine = create_engine(str(connector))
     con = engine.connect()
-    print('test1')
     df.to_sql(con=con, name=naam, if_exists='replace')
-    print('test2')
     # kijken of de tabel nu bestaat_tabel
     gelukt = bestaat_tabel(engine, naam)
     if gelukt == True:

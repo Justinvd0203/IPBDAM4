@@ -10,11 +10,11 @@ from tkinter import messagebox
 
 
 def bestaat_tabel(engine, naam):
-    #nogmaals verbinden met een raw connection om te kijken of het overzetten gelukt is
+    # nogmaals verbinden met een raw connection om te kijken of het overzetten gelukt is
     raw_connection = engine.raw_connection()
     cursor = raw_connection.cursor()
 
-    #select statement om te kijken of de database bestaat_tabel, bij een error bestaat_tabel hij niet en returned False.
+    # select statement om te kijken of de database bestaat_tabel, bij een error bestaat_tabel hij niet en returned False.
     try:
         cursor.execute('SELECT 1 FROM ' + naam + ' LIMIT 1;')
         result = cursor.fetchone()
@@ -32,13 +32,13 @@ def csv_naar_sql(df, naam, gebruiker, wachtwoord, database, host):
     naam = naam.split('/')
     naam = str(naam[-1])
 
-    #verbinden met de database en dit vervolgens met df.to_sql het df in de database zetten
+    # verbinden met de data base en dit vervolgens met df.to_sql het df in de database zetten
     connector = 'mysql+mysqlconnector://' + gebruiker + ':' + wachtwoord + '@' + host + '/' + database
     engine = create_engine(str(connector))
     con = engine.connect()
     df.to_sql(con=con, name=naam, if_exists='replace')
 
-    #kijken of de tabel nu bestaat_tabel
+    # kijken of de tabel nu bestaat_tabel
     klopt = bestaat_tabel(engine, naam)
     return klopt
 
@@ -51,7 +51,7 @@ def tkinter():
                                                    filetypes=(('csv files', '*.csv'), ('alle files', '*.*')))
         df = pd.read_csv(str(root.filename), sep=';')
 
-        #Opslaan input van de gebruiker
+        # Opslaan input van de gebruiker
         gebruiker = str(entrygebruiker.get())
         wachtwoord = str(entrywachtwoord.get())
         database = str(entrydatabase.get())
@@ -65,7 +65,7 @@ def tkinter():
         elif gelukt == False:
             tk.messagebox.showinfo('Niet gelukt', 'De data is niet succesvol overgezet in de database')
 
-    #aanmaken hoofdscherm tkinter
+    # aanmaken hoofdscherm tkinter
     root = tk.Tk()
     root.config(background='white')
     root.title('Smart071 Groep4 csv to SQLDB')
@@ -73,41 +73,41 @@ def tkinter():
     canvashoofd = tk.Canvas(root, width=800, height=600, background='white', borderwidth=0, highlightthickness=0)
     canvashoofd.pack()
 
-    #aanmaken titel op hoofdcanvas
+    # aanmaken titel op hoofdcanvas
     titel = tk.Label(text='SMART071', background='white', font=('Courier bold', 44), fg='sky blue')
     canvashoofd.create_window(400, 100, window=titel)
 
-    #aanmaken invoer gebruiker
+    # aanmaken invoer gebruiker
     labelgebruiker = tk.Label(text='Gebruiker:', background='white', font=('Courier', 20))
     canvashoofd.create_window(200, 200, window=labelgebruiker)
     entrygebruiker = tk.Entry(root, font=('Courier', 15))
     canvashoofd.create_window(450, 200, window=entrygebruiker)
 
-    #aanmaken invoer wachtwoord
+    # aanmaken invoer wachtwoord
     labelwachtwoord = tk.Label(text='Wachtwoord:', background='white', font=('Courier', 20))
     canvashoofd.create_window(200, 275, window=labelwachtwoord)
     entrywachtwoord = tk.Entry(root, font=('Courier', 15), show='*')
     canvashoofd.create_window(450, 275, window=entrywachtwoord)
 
-    #aanmaken invoer database
+    # aanmaken invoer database
     labeldatabase = tk.Label(text='Database:', background='white', font=('Courier', 20))
     canvashoofd.create_window(200, 350, window=labeldatabase)
     entrydatabase = tk.Entry(root, font=('Courier', 15))
     canvashoofd.create_window(450, 350, window=entrydatabase)
 
-    #aanmaken invoer host
+    # aanmaken invoer host
     labelhost = tk.Label(text='Host:', background='white', font=('Courier', 20))
     canvashoofd.create_window(200, 425, window=labelhost)
     entryhost = tk.Entry(root, font=('Courier', 15))
     canvashoofd.create_window(450, 425, window=entryhost)
 
-    #invoegen afbeelding hsleiden
+    # invoegen afbeelding hsleiden
     imgHSL = PhotoImage(file='Afbeeldingen/hsleiden.png')
     imgHSL = imgHSL.subsample(2)
     labelimgHSL = tk.Label(root, image=imgHSL, borderwidth=0)
     canvashoofd.create_window(700, 525, window=labelimgHSL)
 
-    #aanmake button die de functie overzetten aanroept
+    # aanmake button die de functie overzetten aanroept
     button = tk.Button(root, text='Overzetten', command=overzetten, bg='sky blue', bd=2.5, font=('Courier', 15))
     canvashoofd.create_window(400, 500, window=button)
 
